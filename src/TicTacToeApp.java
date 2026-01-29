@@ -1,6 +1,7 @@
 /**
- * 
+ *
  */
+
 
 
 import java.util.*;
@@ -17,11 +18,11 @@ import java.io.*;
 enum Mode { CLIENT, SERVER };
 
 public class TicTacToeApp {
-	
+
 	public static void main(String[] args) {
 		Mode mode;
 		Connectable peer;
-		
+
 		Logger log = Logger.getLogger("TicTacToeApp");
 		StreamHandler handler;
 		try {
@@ -30,13 +31,13 @@ public class TicTacToeApp {
 		catch (Exception e) {
 			log.warning(String.format("Unable to create global logger file handler: %s", e.getMessage()));
 			return;
-		} 
+		}
 		handler.setFormatter(new SimpleFormatter());
 		log.addHandler(handler);
-		
+
 		String peerName = "";
 		int port = TicTacToeApp.USE_DEFAULT_PORT;
-		
+
 		System.out.print("Do you want to Connect to the remote system or Wait for an incoming connection (enter C or W)? ");
 		try (Scanner in = new Scanner(System.in);) {
 			String choice = in.nextLine();
@@ -96,7 +97,7 @@ public class TicTacToeApp {
 					return;
 				}
 			}
-			
+
 			try {
 				peer.connect();
 			}
@@ -107,7 +108,7 @@ public class TicTacToeApp {
 			String character, remoteChar;
 			String localCommand, localResponse, remoteResponse;
 			int rows, cols;
-			
+
 			TicTacToe game = new TicTacToe("X", "O", 3, 3);
 			TicTacToeProtocol prot = new TicTacToeProtocol(game);
 
@@ -119,7 +120,7 @@ public class TicTacToeApp {
 					rows = in.nextInt();
 					cols = in.nextInt();
 					localCommand = String.format("conf %s %d %d", character, rows, cols);
-					remoteResponse = sendRecv(peer, prot, localCommand); 
+					remoteResponse = sendRecv(peer, prot, localCommand);
 				} while (!remoteResponse.contains("conf OK"));
 			}
 			else {
@@ -134,7 +135,7 @@ public class TicTacToeApp {
 				}
 				log.info(String.format("Client character is %s, local character is %s", remoteChar, character));
 			}
-			
+
 			int row, col;
 			while (prot.getState() != TicTacToeStates.FINISHED) {
 				if (mode == Mode.CLIENT) {
@@ -143,7 +144,7 @@ public class TicTacToeApp {
 						row = in.nextInt();
 						col = in.nextInt();
 						localCommand = String.format("mark %s %d %d", character, row, col);
-						remoteResponse = sendRecv(peer, prot, localCommand); 
+						remoteResponse = sendRecv(peer, prot, localCommand);
 						if (!remoteResponse.contains("mark OK")) {
 							System.out.println("Invalid row and column specified.");
 						}
@@ -154,9 +155,9 @@ public class TicTacToeApp {
 						localResponse = recvSend(peer, prot);
 					} while (!localResponse.contains("mark OK") && prot.getState() != TicTacToeStates.FINISHED);
 				}
-				
+
 				System.out.println(game);
-				
+
 				if (prot.getState() == TicTacToeStates.FINISHED) {
 					if (game.getState() == TicTacToeWinner.DRAW) {
 						System.out.println("It's a draw!");
@@ -169,7 +170,7 @@ public class TicTacToeApp {
 					}
 					continue;
 				}
-				
+
 				if (mode == Mode.CLIENT) {
 					do {
 						localResponse = recvSend(peer, prot);
@@ -181,15 +182,15 @@ public class TicTacToeApp {
 						row = in.nextInt();
 						col = in.nextInt();
 						localCommand = String.format("mark %s %d %d", character, row, col);
-						remoteResponse = sendRecv(peer, prot, localCommand); 
+						remoteResponse = sendRecv(peer, prot, localCommand);
 						if (!remoteResponse.contains("mark OK")) {
 							System.out.println("Invalid row and column specified.");
 						}
 					} while (!remoteResponse.contains("mark OK") && prot.getState() != TicTacToeStates.FINISHED);
 				}
-				
+
 				System.out.println(game);
-				
+
 				if (game.getState() == TicTacToeWinner.DRAW) {
 					System.out.println("It's a draw!");
 				}
@@ -200,12 +201,12 @@ public class TicTacToeApp {
 					else {
 						System.out.println("You won!");
 					}
-				}			
+				}
 			}
 		}
 	}
 	public static final int USE_DEFAULT_PORT = -1;
-	
+
 	private static String sendRecv(Connectable peer, TicTacToeProtocol prot, String localCommand) {
 		String localResponse, remoteResponse;
 		peer.send(localCommand);
@@ -218,7 +219,7 @@ public class TicTacToeApp {
 		}
 		return remoteResponse;
 	}
-	
+
 	private static String recvSend(Connectable peer, TicTacToeProtocol prot) {
 		String remoteCommand = peer.receive();
 		String localResponse = prot.process(remoteCommand);

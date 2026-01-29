@@ -1,6 +1,7 @@
 /**
- * 
+ *
  */
+
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +10,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.NoSuchElementException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -22,53 +23,53 @@ import java.util.logging.StreamHandler;
  */
 public class TicTacToeProtocolClient implements Connectable {
 	public TicTacToeProtocolClient(String server) {
-		this(server, DEFAULT_PORT);		
+		this(server, DEFAULT_PORT);
 	}
-	
+
 	public TicTacToeProtocolClient(String server, int port) {
 		this.log = Logger.getLogger("global");
 		this.server = server;
 		this.port = port;
 	}
-	
+
 	@Override
 	public void connect() throws IOException {
 		this.socket = new Socket(this.server, this.port);
-		
+
 		log.info(String.format("Connection to server %s established at port %d.\n", server, port));
 		this.inStream =  this.socket.getInputStream();
 		this.outStream = this.socket.getOutputStream();
 		this.in = new Scanner(this.inStream);
-		this.out = new PrintWriter(new OutputStreamWriter(this.outStream, StandardCharsets.UTF_8), true /*autoFlush */);		
+		this.out = new PrintWriter(new OutputStreamWriter(this.outStream, StandardCharsets.UTF_8), true /*autoFlush */);
 	}
-	
+
 	@Override
 	public void send(String message) {
 		this.out.println(message);
 		log.info(String.format("Message %s sent.\n", message));
 	}
-	
+
 	@Override
 	public String receive() {
 		String message = this.in.nextLine();
 		log.info(String.format("Message %s received.\n", message));
 		return message;
 	}
-	
+
 	public int getPort() {
 		return this.port;
 	}
-	
+
 	public String getServer() {
 		return this.server;
 	}
-	
+
 	public boolean isConnectionClosed() {
 		return this.socket.isClosed();
 	}
-	
+
 	public static final int DEFAULT_PORT = 8189;
-	
+
 	private Socket socket;
 	private String server;
 	private int port;
@@ -76,7 +77,7 @@ public class TicTacToeProtocolClient implements Connectable {
 	private OutputStream outStream;
 	Scanner in;
 	PrintWriter out;
-	private Logger log;	
+	private Logger log;
 }
 
 class TicTacToeProtocolClientDemo {
@@ -104,10 +105,10 @@ class TicTacToeProtocolClientDemo {
 		catch (Exception e) {
 			log.warning(String.format("Unable to create global logger file handler: %s", e.getMessage()));
 			throw e;
-		} 
+		}
 		handler.setFormatter(new SimpleFormatter());
 		log.addHandler(handler);
-		
+
 		TicTacToeProtocolClient gameComm = null;
 		try {
 			if (args.length == 0) {
@@ -123,7 +124,7 @@ class TicTacToeProtocolClientDemo {
 		}
 		catch (NumberFormatException e) {
 			if (gameComm != null ) {
-				gameComm = new TicTacToeProtocolClient(args[0]);	
+				gameComm = new TicTacToeProtocolClient(args[0]);
 				log.warning(String.format("Invalid port number %s, using the default value of %d", args[1], gameComm.getPort()));
 			}
 		}
@@ -133,12 +134,12 @@ class TicTacToeProtocolClientDemo {
 		catch (UnknownHostException e) {
 			log.severe(String.format("Unknown host: %s.\n", e.getMessage()));
 			throw e;
-		} 
+		}
 		catch (IOException e) {
 			log.severe(String.format("Unable to create socket: %s", e.getMessage()));
 			throw e;
 		}
-		
+
 		String command, response = "";
 		try (Scanner in = new Scanner(System.in);) {
 			while (!gameComm.isConnectionClosed() && response.indexOf("wins") == -1 && response.indexOf("draw") == -1)

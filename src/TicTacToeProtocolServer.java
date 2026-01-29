@@ -1,15 +1,16 @@
 /**
- * 
+ *
  */
+
 
 import java.io.*;
 import java.net.*;
-import java.nio.charset.*;
 import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
+import java.nio.charset.*;
 
 /**
  * @author gildem4
@@ -19,15 +20,15 @@ public class TicTacToeProtocolServer implements Connectable {
 	public TicTacToeProtocolServer() throws IOException {
 		this(DEFAULT_PORT);
 	}
-	
+
 	public TicTacToeProtocolServer(int port) throws IOException {
 		this.log = Logger.getLogger("global");
-		
+
 		this.port = port;
 		this.servSocket = new ServerSocket(this.port);
 		log.info(String.format("Server socket was created on port %d.\n", port));
 	}
-	
+
 	@Override
 	public void connect() throws IOException {
 		this.socket = this.servSocket.accept();
@@ -35,28 +36,28 @@ public class TicTacToeProtocolServer implements Connectable {
 		this.inStream =  this.socket.getInputStream();
 		this.outStream = this.socket.getOutputStream();
 		this.in = new Scanner(this.inStream);
-		this.out = new PrintWriter(new OutputStreamWriter(this.outStream, StandardCharsets.UTF_8), true /*autoFlush */);		
+		this.out = new PrintWriter(new OutputStreamWriter(this.outStream, StandardCharsets.UTF_8), true /*autoFlush */);
 	}
-	
+
 	@Override
 	public void send(String message) {
 		this.out.println(message);
 		log.info(String.format("Message %s sent.\n", message));
 	}
-	
+
 	@Override
 	public String receive() {
 		String message = this.in.nextLine();
 		log.info(String.format("Message %s received.\n", message));
 		return message;
 	}
-	
+
 	public int getPort() {
 		return this.port;
 	}
 
 	public static final int DEFAULT_PORT = 8189;
-	
+
 	private int port;
 	private Socket socket;
 	private ServerSocket servSocket;
@@ -94,10 +95,10 @@ class TicTacToeProtocolServerDemo {
 		catch (Exception e) {
 			log.warning(String.format("Unable to create global logger file handler: %s", e.getMessage()));
 			throw e;
-		} 
+		}
 		handler.setFormatter(new SimpleFormatter());
 		log.addHandler(handler);
-		
+
 		TicTacToeProtocolServer gameComm = null;
 		try {
 			if (args.length > 0) {
@@ -123,7 +124,7 @@ class TicTacToeProtocolServerDemo {
 			log.severe(String.format("Unable to create server socket: %s", e.getMessage()));
 			throw e;
 		}
-		
+
 		try {
 			gameComm.connect();
 		}
@@ -131,7 +132,7 @@ class TicTacToeProtocolServerDemo {
 			log.severe(String.format("Accepting connection from a client failed: %s", e.getMessage()));
 			throw e;
 		}
-		
+
 		String command, response;
 		TicTacToe game = new TicTacToe("X", "O", 3, 3);
 		TicTacToeProtocol prot = new TicTacToeProtocol(game);

@@ -1,5 +1,7 @@
-import java.io.*;
-import java.net.*;
+/**
+ *
+ */
+
 import java.util.*;
 
 /**
@@ -22,7 +24,7 @@ class TicTacToe {
 	//    !(player2.toLowerCase().equals("x") || player2.toLowerCase().equals("o")) || player1.toLowerCase().equals(player2.toLowerCase())
 	// returns: none 
 	public TicTacToe(String player1, String player2, int rows, int cols) {
-		if (rows < 3 || cols < 3 || rows != cols || player1 == null || player2 == null || 
+		if (rows < 3 || cols < 3 || rows != cols || player1 == null || player2 == null ||
 				!(player1.toLowerCase().equals("x") || player1.toLowerCase().equals("o")) ||
 				!(player2.toLowerCase().equals("x") || player2.toLowerCase().equals("o")) || player1.toLowerCase().equals(player2.toLowerCase())) {
 			throw new IllegalArgumentException("Invalid arguments passed to <init>()");
@@ -46,7 +48,7 @@ class TicTacToe {
 				this.grid[i][j] = "";
 			}
 		}
-		this.state = TicTacToeWinner.INIT;		
+		this.state = TicTacToeWinner.INIT;
 	}
 
 	// requires: true
@@ -62,7 +64,7 @@ class TicTacToe {
 		this.cols = cols;
 		reset();
 	}
-	
+
 	// requires: true
 	// modifies: none
 	// effects: none
@@ -84,7 +86,7 @@ class TicTacToe {
 	//   or !grid[row][col].equals("")
 	// returns:	none
 	public void setCell(String player, int row, int col) {
-		if (row < 0 || col < 0 || row >= this.grid.length || col >= this.grid[row].length || player == null || 
+		if (row < 0 || col < 0 || row >= this.grid.length || col >= this.grid[row].length || player == null ||
 				!(player.toLowerCase().equals("x") || player.toLowerCase().equals("o"))) {
 			throw new IllegalArgumentException("Invalid arguments passed to setCell()");
 		}
@@ -104,9 +106,9 @@ class TicTacToe {
 		}
 		else if (getUnmarkedCellsCount() == 0) {
 			this.state = TicTacToeWinner.DRAW;
-		}		
+		}
 	}
-	
+
 	// requires: true
 	// modifies: none
 	// effects: none
@@ -115,21 +117,21 @@ class TicTacToe {
 	public TicTacToeWinner getState() {
 		return this.state;
 	}
-	
+
 	/**
 	 * @return the player1
 	 */
 	public String getPlayer1() {
 		return this.player1;
 	}
-	
+
 	/**
 	 * @return the player2
 	 */
 	public String getPlayer2() {
 		return this.player2;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer();
@@ -138,7 +140,7 @@ class TicTacToe {
 			str.append("\u2500\u2500\u2500\u252c");
 		}
 		str.append("\u2500\u2500\u2500\u2510\n");
-		
+
 		String[] row;
 		for (int r = 0; r < this.rows; r++) {
 			row = this.grid[r];
@@ -159,10 +161,10 @@ class TicTacToe {
 			str.append("\u2500\u2500\u2500\u2534");
 		}
 		str.append("\u2500\u2500\u2500\u2518\n");
-		
+
 		return str.toString();
 	}
-	
+
 	// requires: true
 	// modifies: none
 	// effects: none
@@ -174,7 +176,7 @@ class TicTacToe {
 		if (player == null || !(player.toLowerCase().equals("x") || player.toLowerCase().equals("o"))) {
 			throw new IllegalArgumentException("Invalid arguments passed to isWinner()");
 		}
-		
+
 		for (String[] row : this.grid) {
 			horizontal = true;
 			for (String cell : row) {
@@ -187,7 +189,7 @@ class TicTacToe {
 				return true;
 			}
 		}
-		
+
 		for (int j = 0; j < this.cols; j++) {
 			vertical = true;
 			for (int i = 0; i < this.rows; i++) {
@@ -210,9 +212,9 @@ class TicTacToe {
 		}
 		if (diagonal) {
 			return true;
-		}		
-		
-		diagonal = true;		
+		}
+
+		diagonal = true;
 		for (int d = 0; d < this.rows; d++) {
 			if (!this.grid[d][this.cols - 1 - d].toLowerCase().equals(player.toLowerCase())) {
 				diagonal = false;
@@ -221,11 +223,11 @@ class TicTacToe {
 		}
 		if (diagonal) {
 			return true;
-		}		
-		
+		}
+
 		return false;
 	}
-	
+
 	// requires: true
 	// modifies: none
 	// effects: none
@@ -241,9 +243,9 @@ class TicTacToe {
 			}
 		}
 		return count;
-		
-	}	
-	
+
+	}
+
 	private String[][] grid;
 	private int rows, cols;
 	private String player1;
@@ -258,13 +260,13 @@ class TicTacToeDemo {
 		System.out.printf("Starting the game of TictacToe. Player 1 is %s; Player 2 is %s\n", game.getPlayer1(), game.getPlayer2());
 		System.out.println(game);
 		try (Scanner in = new Scanner(System.in);) {
-		game:	do {
+			game:	do {
 				for (int turn = 1; turn <=2; turn++) {
 					System.out.printf("Enter the cell for Player %d to mark \"row col\": ", turn);
 					row = in.nextInt();
 					col = in.nextInt();
 					if (turn == 1) {
-						game.setCell(game.getPlayer1(), row, col); 
+						game.setCell(game.getPlayer1(), row, col);
 					}
 					else {
 						game.setCell(game.getPlayer2(), row, col);
@@ -272,15 +274,15 @@ class TicTacToeDemo {
 					System.out.println(game);
 					switch (game.getState()) {
 						case PLAYER1_WON :  System.out.printf("Player 1 wins!\n");
-										break game;
+							break game;
 						case PLAYER2_WON :  System.out.printf("Player 2 wins!\n");
-										break game;
+							break game;
 						case DRAW :     System.out.printf("It's a draw!\n");
-										break game;
+							break game;
 						default :       break;
 					}
 				}
-				
+
 			} while (game.getState() == TicTacToeWinner.IN_PROGRESS);
 		}
 	}
