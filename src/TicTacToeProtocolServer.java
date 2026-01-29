@@ -1,7 +1,6 @@
 /**
  * 
  */
-package edu.rpi.csci2600.gildem4;
 
 import java.io.*;
 import java.net.*;
